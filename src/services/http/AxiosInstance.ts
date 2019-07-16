@@ -64,6 +64,7 @@ function responseError (err) {
  */
 export default function defaultInstance (): AxiosInstance {
   if (!defaultInst) {
+    console.log('config', config)
     defaultInst = axios.create({
       baseURL: config.apiRoot + '/survey-view',
       timeout: 120000,

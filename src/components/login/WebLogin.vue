@@ -100,6 +100,7 @@
             router.push({name: 'Home'})
           }
         } catch (err) {
+          debugger
           if (err.response && err.response.status && err.response.status === 403) {
             this.errorMessage = 'Invalid username or password'
           } else {

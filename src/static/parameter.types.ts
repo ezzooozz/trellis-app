@@ -19,5 +19,7 @@ export default {
   show_dk: 6,
   show_rf: 7,
   is_required: 8,
-  geo_type: 9
+  geo_type: 9,
+  allowed_time: 22,
+  show_timer_controls: 23
 }

@@ -79,6 +79,9 @@ module.exports = smp.wrap({
         test: /\.(js|vue)$/,
         use: [{
           loader: 'thread-loader',
+          options: {
+            workers: 2
+          }
         }, {
           loader: 'eslint-loader',
           options: {
@@ -91,7 +94,10 @@ module.exports = smp.wrap({
       {
         test: /\.tsx?$/,
         use: [{
-          loader: 'thread-loader'
+          loader: 'thread-loader',
+          options: {
+            workers: 2
+          }
         }, {
           loader: 'ts-loader',
           options: {
@@ -104,7 +110,10 @@ module.exports = smp.wrap({
       {
         test: /\.vue$/,
         use: [{
-          loader: 'thread-loader'
+          loader: 'thread-loader',
+          options: {
+            workers: 2
+          }
         }, {
           loader: 'vue-loader',
           options: vueLoaderConfig,
@@ -114,7 +123,10 @@ module.exports = smp.wrap({
       {
         test: /\.js$/,
         use: [{
-          loader: 'thread-loader'
+          loader: 'thread-loader',
+          options: {
+            workers: 2
+          }
         }, {
           loader: 'babel-loader',
           options: {

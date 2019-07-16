@@ -7,7 +7,6 @@ var merge = require('webpack-merge')
 var baseWebpackConfig = require('./webpack.base.conf')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 var FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
-var HardSourceWebpackPlugin = require('hard-source-webpack-plugin')
 var HandlebarsPlugin = require('handlebars-webpack-plugin')
 
 // add hot-reload related code to entry chunks
@@ -52,7 +51,6 @@ module.exports = merge(baseWebpackConfig, {
       data: require('../config/config-xml.data.dev'),
       entry: path.join(__dirname, '../src/config.xml.hbs'),
       output: path.join(__dirname, '../www/config.xml')
-    }),
-    new HardSourceWebpackPlugin()
+    })
   ]
 })
