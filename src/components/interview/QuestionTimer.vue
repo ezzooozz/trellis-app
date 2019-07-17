@@ -2,12 +2,12 @@
   <v-layout row>
     <v-flex class="container">
       <v-progress-linear height="20" color="accent" :value="timer.progress * 100"/>
-      <div class="center" :style="{color: timer.elapsed > timer.duration / 2 ? 'white' : 'black'}">{{(timer.duration - timer.elapsed) / 1000 | toFixed(0)}}</div>
+      <div class="center" :style="{color: timer.elapsed > timer.duration / 2 ? 'white' : 'black'}">{{Math.abs(timer.duration - timer.elapsed) / 1000 | toFixed(0)}}</div>
     </v-flex>
-
     <v-btn
       v-if="showControls"
       color="primary"
+      :disabled="timer.hasExpired"
       @click="toggleState">
       <v-icon v-if="timer.isRunning">pause</v-icon>
       <v-icon v-else>play_arrow</v-icon>
@@ -38,7 +38,7 @@
     },
     data () {
       return {
-        timer: new Timer(this.duration * 1000)
+        timer: new Timer(this.duration * 1000, 1000)
       }
     },
     beforeDestroy () {
