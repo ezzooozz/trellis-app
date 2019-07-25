@@ -32,6 +32,7 @@ www/js/vendor.*.js
 
 config.js
 config.prod.*.js
+config.test.*.js
 config.dev.js
 config.xml.js
 
