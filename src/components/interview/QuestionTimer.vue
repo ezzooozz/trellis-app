@@ -63,6 +63,7 @@
   $size: 20px
   .container
     margin: 0 1rem
+    min-height: $size
     padding: 0
     position: relative
     > *
