@@ -1,5 +1,6 @@
 import Emitter from "../../../classes/Emitter";
 import Form from "../../../entities/trellis/Form";
+import { ConditionAssignmentError } from './ConditionAssignmentError'
 import ConditionTagStore from "./ConditionTagStore";
 import Page from "../../../entities/trellis/QuestionGroup";
 import {InterviewLocation} from "../services/InterviewAlligator";
@@ -21,6 +22,7 @@ import InterviewAlligator from "../services/InterviewAlligator";
 import {defaultLoggingService as logger} from "../../../services/logging/LoggingService";
 import Choice from "../../../entities/trellis/Choice";
 import QT from "../../../static/question.types";
+import { createConditionAssignmentAPI } from './ConditionAssignmentAPI'
 
 export default class InterviewManagerBase extends Emitter {
 
@@ -41,6 +43,7 @@ export default class InterviewManagerBase extends Emitter {
   public questionIdToSectionNum: Map<string, number> = new Map()
   public questionIdToPageNum: Map<string, number> = new Map()
 
+  public conditionAssignmentErrors: ConditionAssignmentError[] = []
   public data: DataStore
   public actions: ActionStore
   public blueprint: Form
@@ -103,12 +106,30 @@ export default class InterviewManagerBase extends Emitter {
    */
   protected initializeConditionAssignment (): void {
     this.conditionAssigner.clear()
-    this.blueprint.sections.forEach(section => {
-      section.pages.forEach(page => {
+    this.blueprint.sections.forEach((section, sectionIndex) => {
+      section.pages.forEach((page, pageIndex) => {
         page.questions.forEach(question => {
           question.assignConditionTags.forEach(act => {
             ConditionTagStore.add(act.conditionTag)
-            this.conditionAssigner.register(act.id, act.logic)
+            try {
+              this.conditionAssigner.register(act.id, act.logic)
+            } catch (err) {
+              console.error('Condition assignment error')
+              console.error(err)
+              this.conditionAssignmentErrors.push({
+                page: pageIndex,
+                section: sectionIndex,
+                sectionRepetition: 0,
+                sectionFollowUpRepetition: 0,
+                error: {
+                  component: 'InterviewManagerBase.ts',
+                  stack: err.stack.toString(),
+                  message: err.message,
+                  name: err.name
+                },
+                logic: act.logic
+              })
+            }
           })
         })
       })
@@ -274,16 +295,30 @@ export default class InterviewManagerBase extends Emitter {
       return vars
     }, {})
 
+    const api = createConditionAssignmentAPI(this.data, this.navigator)
+
     for (let question of questionsWithData) {
       for (let act of question.assignConditionTags) {
         try {
-          if (this.conditionAssigner.run(act.id, vars)) {
+          if (this.conditionAssigner.run(act.id, vars, api)) {
             this.assignConditionTag(act)
           }
         } catch (err) {
           err.component = 'InterviewManagerBase.ts'
           logger.log(err)
-          throw err
+          this.conditionAssignmentErrors.push({
+            page: this.navigator.loc.page,
+            section: this.navigator.loc.section,
+            sectionRepetition: this.navigator.loc.sectionRepetition,
+            sectionFollowUpRepetition: this.navigator.loc.sectionFollowUpRepetition,
+            logic: act.logic,
+            error: {
+              component: 'InterviewManagerBase.ts',
+              stack: err.stack.toString(),
+              message: err.message,
+              name: err.name
+            }
+          })
         }
       }
     }

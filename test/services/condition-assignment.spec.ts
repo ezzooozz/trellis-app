@@ -65,6 +65,15 @@ export default function () {
       // console.log(cassTime, evalTime)
       expect(cassTime).to.be.lessThan(evalTime, 'Wow... This managed to be slower somehow O.o')
     })
+
+    describe('api', () => {
+
+      it('should handle looking up data anywhere in the form')
+      it('should get data for current section in follow up sections')
+      it('should correctly query the existence of condition tags')
+      it('should return the correct state of the form')
+
+    })
   })
 
 }

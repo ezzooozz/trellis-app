@@ -415,6 +415,31 @@ export default class DataStore extends Emitter {
     return this.questionDatumIdMap.get(id)
   }
 
+  /**
+   * Search all of the condition tags to check if one currently exists
+   * @param name
+   * @param sectionRepetition
+   * @param followUpDatumId
+   */
+  hasConditionTag (name: string, sectionRepetition: number, followUpDatumId: string): boolean {
+    for (const tag of this.conditionTags['respondent']) {
+      if (tag.conditionTag && tag.conditionTag.name === name) {
+        return true
+      }
+    }
+    for (const tag of this.conditionTags['survey']) {
+      if (tag.conditionTag && tag.conditionTag.name === name) {
+        return true
+      }
+    }
+    for (const tag of this.conditionTags['section']) {
+      if (tag.repetition === sectionRepetition && tag.followUpDatumId === followUpDatumId) {
+        return true
+      }
+    }
+    return false
+  }
+
 }
 
 /**

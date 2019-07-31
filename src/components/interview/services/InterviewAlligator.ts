@@ -20,6 +20,11 @@ export interface InterviewLocation {
   sectionFollowUpDatumId?: string
 }
 
+export interface InterviewQuestionLocation extends InterviewLocation {
+  questionId: string
+  questionTypeId: string
+}
+
 enum SortMethod {
   NATURAL,
   RANDOM
@@ -255,6 +260,28 @@ export default class InterviewAlligator {
       }
     }
     throw new Error(`Unable to find matching question datum for action ${action}`)
+  }
+
+  public getLocByVarName (varName: string, sectionRepetition: number, sectionFollowUpRepetition: number): InterviewQuestionLocation | null {
+    for (const loc of this.pages) {
+      const questionGroup: QuestionGroup = this.pageIndex.get(loc.pageId)
+      if (loc.sectionRepetition === sectionRepetition && loc.sectionFollowUpRepetition === sectionFollowUpRepetition) {
+        for (const question of questionGroup.questions) {
+          if (question.varName === varName) {
+            return {
+              page: loc.page,
+              section: loc.section,
+              questionId: question.id,
+              questionTypeId: question.questionTypeId,
+              sectionRepetition: loc.sectionRepetition,
+              sectionFollowUpDatumId: loc.sectionFollowUpDatumId,
+              sectionFollowUpRepetition: loc.sectionFollowUpRepetition
+            }
+          }
+        }
+      }
+    }
+    return null
   }
 
   public zero (): void {

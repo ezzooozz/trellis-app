@@ -1,9 +1,7 @@
 /* global zip */
 /* global Zeep */
 import FileService from '../file/FileService'
-
 class ZipServiceCordova {
-
   unzipFile (fileEntry, progressCallback) {
     return new Promise((resolve, reject) => {
       FileService.requestFileSystem()
@@ -31,7 +29,6 @@ class ZipServiceCordova {
         })
     })
   }
-
   zipFile (fromDirectoryEntry, toDirectoryEntry, toFileName) {
     console.log('zipFile')
     return new Promise((resolve, reject) => {
@@ -49,7 +46,5 @@ class ZipServiceCordova {
         })
     })
   }
-
 }
-
 export default ZipServiceCordova
