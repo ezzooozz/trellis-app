@@ -250,28 +250,31 @@ export default class InterviewManager extends InterviewManagerBase {
       throw Error('next: Already navigating')
     }
     this.isNavigating = true
-    this.navigator.updatePagesCalled = 0
-    if (this.hasAddedActions && !this.isAtHighWaterMark) {
-      // We aren't at the end of the survey and we made changes. Replay the all actions to rebuild the state before moving forward.
-      this.resetHighWaterMark()
-      this.replayToCurrent()
-      this.stepForward(false)
-    } else if (this.isAtHighWaterMark && this.lastAction) {
-      // We are at the end of the survey and we made changes. Play all valid actions ahead of this point in the survey and then move back to the correct page.
-      if (this.stepForward()) {
-        // Only play actions and move forward if we haven't already reached the end of the survey
-        const loc = JSON.parse(JSON.stringify(this.location))
-        this.playActionsAndMoveForward()
-        this.seek(loc.section, loc.page, loc.sectionRepetition, loc.sectionFollowUpRepetition)
+    try {
+      this.navigator.updatePagesCalled = 0
+      if (this.hasAddedActions && !this.isAtHighWaterMark) {
+        // We aren't at the end of the survey and we made changes. Replay the all actions to rebuild the state before moving forward.
+        this.resetHighWaterMark()
+        this.replayToCurrent()
+        this.stepForward(false)
+      } else if (this.isAtHighWaterMark && this.lastAction) {
+        // We are at the end of the survey and we made changes. Play all valid actions ahead of this point in the survey and then move back to the correct page.
+        if (this.stepForward()) {
+          // Only play actions and move forward if we haven't already reached the end of the survey
+          const loc = JSON.parse(JSON.stringify(this.location))
+          this.playActionsAndMoveForward()
+          this.seek(loc.section, loc.page, loc.sectionRepetition, loc.sectionFollowUpRepetition)
+        }
+        this.lastActionHasChanged = false
+      } else {
+        // No actions have been added so we just move to the next page
+        this.stepForward(false)
       }
-      this.lastActionHasChanged = false
-    } else {
-      // No actions have been added so we just move to the next page
-      this.stepForward(false)
+      await this.save()
+      this.hasAddedActions = false
+    } finally {
+      this.isNavigating = false
     }
-    await this.save()
-    this.hasAddedActions = false
-    this.isNavigating = false
   }
 
   async previous () {
@@ -279,10 +282,13 @@ export default class InterviewManager extends InterviewManagerBase {
       throw Error('previous: Already navigating')
     }
     this.isNavigating = true
-    this.navigator.updatePagesCalled = 0
-    this.stepBackward()
-    await this.save()
-    this.isNavigating = false
+    try {
+      this.navigator.updatePagesCalled = 0
+      this.stepBackward()
+      await this.save()
+    } finally {
+      this.isNavigating = false
+    }   
   }
 
   stepForward (dataHasChanged: boolean = true): boolean {
