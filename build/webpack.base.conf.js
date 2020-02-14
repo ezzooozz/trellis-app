@@ -15,7 +15,7 @@ function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
 
-const useThreadLoader = false
+const useThreadLoader = true
 function threaded (arr) {
   if (useThreadLoader) {
     arr.unshift({

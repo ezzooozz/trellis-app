@@ -15,6 +15,7 @@
         :items="locales"
         item-text="languageTag"
         item-value="id"
+        return-object
         v-model="selectedLocale"
         :disabled="saving || isEditing" />
     </v-layout>

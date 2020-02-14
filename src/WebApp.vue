@@ -1,5 +1,5 @@
 <template>
-  <v-app light dense class="web" :dark="global.darkTheme" :class="{ 'print-mode' : global.printMode, 'cpu-optimized': global.cpuOptimized }">
+  <v-app lightdense class="web" :dark="global.darkTheme" :class="{ 'print-mode' : global.printMode, 'cpu-optimized': global.cpuOptimized }">
     <v-dialog
       max-width="300"
       v-model="global.loading.fullscreen && global.loading.active"
@@ -19,30 +19,27 @@
       v-model="global.menuDrawer.open"
       app>
       <MainMenu />
-    </v-navigation-drawer>
-    <v-toolbar
-      fixed app
-      :value="serverMode === 'demo' || serverMode === 'test'"
+    </v-navigation-drawer>   
+    <v-toolbar 
+      v-if="serverMode === 'demo' || serverMode === 'test'"
       :color="serverMode === 'demo' ? demoBannerColor : testBannerColor">
       <v-toolbar-title>
-       <span v-if="serverMode === 'demo'">
-         {{ $t('demo_alert') }}
-       </span>
-       <span v-else-if="serverMode === 'test'">
+      <span v-if="serverMode === 'demo'">
+        {{ $t('demo_alert') }}
+      </span>
+      <span v-else-if="serverMode === 'test'">
         {{ $t('test_alert') }}
-       </span>
+      </span>
       </v-toolbar-title>
       <v-btn
         v-if="serverMode === 'demo' && isWeb && !isLoggedIn"
         :to="{name: 'DemoSignUp'}">{{$t('sign_up')}}</v-btn>
     </v-toolbar>
-    <v-toolbar
-      fixed app
-      :class="{'main-menu': serverMode=='production', 'main-menu-demo': serverMode=='demo' || serverMode=='test'}">
+    <v-app-bar :class="{'main-menu': serverMode=='production', 'main-menu-demo': serverMode=='demo' || serverMode=='test'}">
       <!-- MainMenu /-->
-      <v-toolbar-side-icon
+      <v-app-bar-nav-icon
         @click.stop="global.menuDrawer.open = !global.menuDrawer.open"
-        v-if="!global.menuDrawer.open"/>
+        v-if="!global.menuDrawer.open" />
       <v-toolbar-title class="logo">
         <router-link :to="{name: 'Home'}" class="deep-orange--text">
           <img src="../static/img/trellis-logo.png" alt="trellis">
@@ -51,8 +48,8 @@
       <v-toolbar-title v-if="global.study" class="study">
         <v-tooltip right>
           <v-btn class="subheading" slot="activator"
-                 flat
-                 @click="toStudySelector">
+                flat
+                @click="toStudySelector">
             {{global.study.name}}
           </v-btn>
           <span>{{$t('change_study')}}</span>
@@ -61,10 +58,10 @@
       <v-spacer></v-spacer>
       <v-tooltip left>
         <v-btn class="subheading"
-               slot="activator"
-               flat
-               icon
-               @click="toLocaleSelector">
+              slot="activator"
+              flat
+              icon
+              @click="toLocaleSelector">
           {{global.locale ? global.locale.languageTag : ''}}
         </v-btn>
         <span>{{$t('change_locale')}}</span>
@@ -74,33 +71,29 @@
         @click.stop="global.secondaryDrawer.onClick">
         <v-icon>{{global.secondaryDrawer.icon || 'search'}}</v-icon>
       </v-toolbar-side-icon>
-    </v-toolbar>
-    <v-content>
-      <v-dialog :value="alerts && alerts.length > 0" persistent>
-        <v-card>
-          <v-card-text>
-            <trellis-alert :current-log="alerts[alerts.length - 1]"></trellis-alert>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn @click="dismissAlert()">Dismiss</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-      <v-container
-        justify-start
-        fluid
-        fill-height
-        :class="{'px-0': $vuetify.breakpoint.xsOnly, 'ma-0 pa-0 app-container': serverMode=='production', 'app-container-demo': serverMode=='demo' || serverMode=='test' }">
-        <router-view class="route-container fade-in" />
-      </v-container>
-    </v-content>
-
+    </v-app-bar>
+    <v-dialog :value="alerts && alerts.length > 0" persistent>
+      <v-card>
+        <v-card-text>
+          <trellis-alert :current-log="alerts[alerts.length - 1]"></trellis-alert>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn @click="dismissAlert()">Dismiss</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-container
+      justify-start
+      fluid
+      fill-height
+      :class="{'px-0': $vuetify.breakpoint.xsOnly, 'ma-0 pa-0 app-container': serverMode=='production', 'app-container-demo': serverMode=='demo' || serverMode=='test' }">
+      <router-view class="route-container fade-in" />
+    </v-container>
     <LocationFinder />
     <CensusFormChecker />
     <SnackbarQueue />
     <DocsSidebar />
-
   </v-app>
 </template>
 

@@ -22,6 +22,7 @@
     "android-vm": "npm run build && cordova run android"
   },
   "dependencies": {
+    "@mdi/font": "^4.9.95",
     "@sentry/browser": "^4.5.3",
     "@types/node": "^10.5.2",
     "@types/webpack-env": "^1.13.6",

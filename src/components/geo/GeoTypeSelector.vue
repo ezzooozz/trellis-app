@@ -7,6 +7,8 @@
           :items="geoTypes"
           v-model="curGeoType"
           item-text="name"
+          item-value="id"
+          return-object
           :label="$t('select_location_type')">
         </v-select>
         <v-btn

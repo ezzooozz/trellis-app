@@ -13,6 +13,7 @@
       @change="change"
       item-text="name"
       item-value="id"
+      return-object
       :items="studies">
     </v-select>
   </v-flex>
@@ -34,8 +35,7 @@
       this.load()
     },
     methods: {
-      change (studyId) {
-        const study = this.getStudyById(studyId)
+      change (study) {
         this.study = study
         StudyService.setCurrentStudy(study)
         this.$emit('change', study)

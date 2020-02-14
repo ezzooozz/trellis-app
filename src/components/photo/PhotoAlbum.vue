@@ -13,14 +13,12 @@
         class="photo-flex"
         :key="photo.id">
         <v-card class="photo-vcard">
-          <v-card-media>
-            <photo
-              @click="showFull(photo)"
-              :isCentered="true"
-              width="100%"
-              :photo="photo">
-            </photo>
-          </v-card-media>
+          <photo
+            @click="showFull(photo)"
+            :isCentered="true"
+            width="100%"
+            :photo="photo">
+          </photo>
           <v-card-actions class="photo-actions">
             <v-btn v-if="allowSorting "flat icon color="amber" @click="setFavorite(photo)">
               <v-icon v-if="photo.pivot.sortOrder === 0" medium>star</v-icon>

@@ -11,6 +11,7 @@
       @change="change"
       item-text="languageName"
       item-value="id"
+      return-object
       :items="locales">
     </v-select>
   </v-flex>
@@ -35,8 +36,7 @@
       this.load()
     },
     methods: {
-      change (localeId) {
-        const locale = this.getLocaleById(localeId)
+      change (locale) {
         this.locale = locale
         LocaleService.setCurrentLocale(locale)
         this.$emit('change', locale)
