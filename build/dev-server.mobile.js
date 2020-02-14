@@ -58,14 +58,6 @@ app.get('/cordova.js', function (req, res) {
       console.log(err)
       res.status(500).send({ error: err })
     })
-    // fs.readFile('platforms/android/platform_www/cordova.js', function (err, data) {
-    //   if (err) {
-    //     res.send(err)
-    //     console.error(err)
-    //   } else {
-    //     res.send(data)
-    //   }
-    // })
   }
 })
 

@@ -2,11 +2,11 @@
   <v-flex xs12 class="roster-question">
     <v-card class="roster">
       <v-list>
-        <v-list-tile
+        <v-list-item
           :data-id="row.id"
           v-for="(row, rowIndex) in roster"
           :key="row.id">
-          <v-list-tile-avatar>
+          <v-list-item-avatar>
             <v-tooltip top>
               <v-btn
                 slot="activator"
@@ -20,22 +20,25 @@
                 {{ $t('revert_changes') }}
               </span>
             </v-tooltip>
-          </v-list-tile-avatar>
-          <v-list-tile-content>
-            <v-text-field
+          </v-list-item-avatar>
+          <v-list-item-content>
+            <v-combobox
               :disabled="isQuestionDisabled"
-              :placeholder="oldText"
+              :placeholder="oldText"             
               v-model="newText"
               v-if="rowIndex === editingIndex"
+              @update:search-input="search"
+              :items="rosterList"
+              :loading="isLoading"
               autofocus
               :append-icon="barcodeIcon"
-              :append-icon-cb="scanBarcode"
+              @click:append="scanBarcode"
               @keyup.enter="stopEditingAndSave(row, rowIndex)"
               @keyup.esc.stop="stopEditingAndRevert(row, rowIndex)" />
             <span class="roster-val"
               v-if="rowIndex !== editingIndex">{{row.val}}</span>
-          </v-list-tile-content>
-          <v-list-tile-action>
+          </v-list-item-content>
+          <v-list-item-action>
             <v-menu
               v-if="!isSavingEdit && !row.isLoading && rowIndex !== editingIndex"
               :disabled="editingIndex > 0 || isQuestionDisabled"
@@ -46,7 +49,7 @@
                 <v-icon>more_vert</v-icon>
               </v-btn>
               <v-list>
-                <v-list-tile>
+                <v-list-item>
                   <v-tooltip left>
                     <v-btn icon @click="startEditingRow(row, rowIndex)" slot="activator">
                       <v-icon>edit</v-icon>
@@ -55,8 +58,8 @@
                       {{ $t('select_to_edit') }}
                     </span>
                   </v-tooltip>
-                </v-list-tile>
-                <v-list-tile>
+                </v-list-item>
+                <v-list-item>
                   <v-tooltip left>
                     <v-btn
                       icon
@@ -66,7 +69,7 @@
                     </v-btn>
                     <span>{{ $t('delete') }}</span>
                   </v-tooltip>
-                </v-list-tile>
+                </v-list-item>
               </v-list>
             </v-menu>
             <v-tooltip top>
@@ -86,28 +89,31 @@
               v-if="isSavingEdit || row.isLoading"
               indeterminate
               color="primary" />
-          </v-list-tile-action>
-        </v-list-tile>
-        <v-list-tile v-if="isAddingNew">
-          <v-list-tile-avatar>
+          </v-list-item-action>
+        </v-list-item>
+        <v-list-item v-if="isAddingNew">
+          <v-list-item-avatar>
             <v-btn
               :disabled="isSavingNew"
               icon
               @click="stopAddingWithoutSaving">
               <v-icon color="red">delete</v-icon>
             </v-btn>
-          </v-list-tile-avatar>
-          <v-list-tile-content>
-            <v-text-field
+          </v-list-item-avatar>
+          <v-list-item-content>
+            <v-autocomplete
               :disabled="isQuestionDisabled"
               v-model="newText"
+              @update:search-input="search"
+              :items="rosterList"
+              :loading="isLoading"
               autofocus
               @keyup.esc="stopAddingWithoutSaving"
               @keyup.enter="stopAddingAndSave"
               :append-icon="barcodeIcon"
-              :append-icon-cb="scanBarcode"/>
-          </v-list-tile-content>
-          <v-list-tile-action>
+              @click:append="scanBarcode"/>
+          </v-list-item-content>
+          <v-list-item-action>
             <v-btn
               v-if="!isSavingNew"
               icon
@@ -118,8 +124,8 @@
               v-if="isSavingNew"
               indeterminate
               color="primary" />
-          </v-list-tile-action>
-        </v-list-tile>
+          </v-list-item-action>
+        </v-list-item>
       </v-list>
       <v-fab-transition>
         <v-btn
@@ -144,10 +150,15 @@
   import ActionMixin from '../mixins/ActionMixin'
   import BarcodeMixin from '../mixins/BarcodeMixin'
   import AT from '../../../static/action.types'
+  import PT from '../../../static/parameter.types'
   export default {
     name: 'roster-question',
     props: {
       question: {
+        type: Object,
+        required: true
+      },
+      respondent: {
         type: Object,
         required: true
       }
@@ -159,9 +170,11 @@
         isAddingNew: false,
         isSavingNew: false,
         isSavingEdit: false,
+        isLoading: false,
         newText: null,
         oldText: null,
-        editingIndex: -1
+        editingIndex: -1,
+        rosterList: []
       }
     },
     created: function () {
@@ -238,6 +251,15 @@
         }).catch(err => {
           this.error = err
         })
+      },
+      async search () {
+        console.log('search')
+        if (!this.sharedRoster) return
+        if (this.isLoading) return
+        if (this.existingRosters.length) return
+        this.isLoading = true
+        this.rosterList = await RosterService.getRespondentRosters(this.respondent.id, this.sharedRoster)
+        this.isLoading = false
       }
     },
     computed: {
@@ -256,6 +278,13 @@
         })
         this.loadRosters(toLoad)
         return rows
+      },
+      sharedRoster () {
+        for (const qp of this.question.questionParameters) {
+          if (qp.parameterId === PT.shared_roster) {
+            return qp.val
+          }
+        }
       }
     }
   }

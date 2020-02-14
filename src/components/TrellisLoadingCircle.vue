@@ -78,11 +78,6 @@
       border: 4px solid rgba(0,0,0,0)
       animation: rotate 1s linear infinite
 
-  .cpu-optimized
-    .loading-container
-      .loading-circle
-        border-rad
-
   @keyframes rotate
     0%
       transform: rotate(0deg)

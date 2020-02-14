@@ -2,8 +2,6 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 // import './timeoutTracker'
 import Vue from 'vue'
-import Vuetify from 'vuetify'
-import 'vuetify/dist/vuetify.css'
 import VueCordova from 'vue-cordova'
 import VueHead from 'vue-head'
 import i18n from './i18n/index'
@@ -18,7 +16,7 @@ import router from './router'
 
 import config from 'config'
 import ConfigService from './services/config'
-import theme from './static/theme'
+import vuetify from './plugins/vuetify'
 import { APP_ENV } from './static/constants'
 import './logging'
 import './filters/toFixed.filter'
@@ -28,7 +26,6 @@ async function init () {
   // Wait for the configuration to load before doing anything else
   await ConfigService.load()
 
-  Vue.use(Vuetify, theme)
   Vue.config.productionTip = false
   Vue.use(VueHead)
   if (config.appEnv === APP_ENV.CORDOVA) {
@@ -39,6 +36,7 @@ async function init () {
   new Vue({
     el: '#app',
     router,
+    vuetify,
     i18n,
     template: '<WebApp />',
     components: {
